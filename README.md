@@ -1,6 +1,6 @@
-# caec
+# MagicFormatter
 
-> A Vue.js project
+> A Vue.js project to the validation and formatting tool of JSON inspired in first MagicFormatter.
 
 ## Build Setup
 
@@ -16,4 +16,4 @@ npm run build
 ```
 
 For detailed explanation on how things work, consult the [docs for vue-loader](http://vuejs.github.io/vue-loader).
-# MagicFormatter
+
