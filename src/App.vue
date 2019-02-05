@@ -34,7 +34,7 @@
   <section class="section">
     <div class="container">
       <span style="font-size: 12px"> Enter your JSON here to see the magic happen: (Your code will NOT be posted anywhere because the program will run in client mode).</span>
-      <textarea v-model="inputDate" class="textarea" id="input" style="width:100%;" placeholder="Enter the content here..."></textarea>
+      <textarea ref="text" v-model="inputDate" class="textarea" id="input" style="width:100%;" placeholder="Enter the content here..."></textarea>
 
       <div class="actions">
 
@@ -42,7 +42,7 @@
           Make a magic
         </button>
 
-        <button id="input-clear" class="button is-small">
+        <button id="input-clear" class="button is-small" v-on:click="clearInput()">
           Clear
         </button>
       </div>
@@ -50,20 +50,20 @@
       <!-- <div style="position:fixed; bottom: 10px; right: 10px; float:right;">
         <a href="#header">BACK TO TOP</a>
       </div> -->
-      <div id="magicWarning"></div>
+      <div id="magicWarning" v-html="messegeError"></div>
 
       <div v-bind:class="{ hidden: isHidden }" style="overflow: auto;" id="outputResult">
-        <pre class="tabSpace2" id="output"></pre>
+        <pre class="tabSpace2" v-html="output" id="output" ref="output"></pre>
 
         <div class="actions-pre">
-          <button class="button is-link output is-small" id="btn-copyclipboard">
+          <button class="button is-link output is-small" id="btn-copyclipboard" v-on:click="resultCopy()">
             Copy to clipboard
           </button>
-          <button class="button output is-small" id="btn-clear-output">
+          <button class="button output is-small" id="btn-clear-output" v-on:click="resultClear()">
             Clear
           </button>
           <div class="select is-small">
-            <select id="select-convert">
+            <select id="select-convert" v-on:change="resultJsonToXML()" v-model="optionConvert">
               <option value="1">JSON to JSON</option>
               <option value="2">JSON to XML</option>
             </select>
@@ -76,7 +76,7 @@
               <option value="4">4 Tab Space</option>
             </select>
           </div>
-          <button class="button is-small" id="btn-minify">
+          <button class="button is-small" v-on:click="resultMinifyCompress()" id="btn-minify">
             Minify/Compress
           </button>
         </div>
@@ -93,7 +93,11 @@ export default {
     return {
       msg: 'Welcome to Your Vue.js App',
       inputDate: '',
-      isHidden: true
+      isHidden: true,
+      messegeError: '',
+      output: '',
+      optionConvert: 1,
+      modelOutput: ''
     }
   },
   methods:{
@@ -102,15 +106,59 @@ export default {
       if(input){
         try {
           var c = $.parseJSON(input);
-          var formattedJSONString = JSONFormat(input.replace(/[\s\n]+/g, ' '));
-
-          this.isHidden = false;
-
+          
+          this.output = JSONFormat(input.replace(/[\s\n]+/g, ' '));
+          
+          this.resultOK();
           
         } catch (err){
-          
+          this.resultError(err);
         }
       }
+    },
+    resultOK(){
+      this.isHidden = false;
+      this.messegeError = '';
+    },
+    resultError(err){
+      this.isHidden = true;
+      this.messegeError = "<div class='json-warning'>" + err + " | Expecting 'STRING', 'NUMBER', 'NULL', 'TRUE', 'FALSE', '{', '[', got 'undefined'. Something wrong is not right. The rabbit did not get out of the hat in time.</div>";
+    },
+    clearInput(){
+      this.isHidden = true;
+      this.inputDate = '';
+      this.messegeError = '';
+      this.$refs.text.focus();
+    },
+    resultCopy(){
+      this.clip(this.$refs.output);
+    },
+    resultClear(){
+      this.clearInput();
+    },
+    resultJsonToXML(){
+      if (this.optionConvert == 1)
+					 this.output = JSONFormat(this.inputDate.replace(/[\s\n]+/g, ' '));
+			if (this.optionConvert == 2){
+        // TO-DO       
+      }
+    },
+    resultTabSpace(){
+
+    },
+    resultMinifyCompress(){
+        var minified = JSON.stringify(JSON.parse(this.output));
+				this.output = minified;
+    },
+    clip(el){
+      var range = document.createRange();
+			range.selectNodeContents(el);
+			var sel = window.getSelection();
+			sel.removeAllRanges();
+			sel.addRange(range);
+
+			document.execCommand("copy");
+			sel.removeAllRanges();
     }
   }
 }
@@ -209,3 +257,4 @@ details[open] summary:after {
   content: "-";
 }
 </style>
+
