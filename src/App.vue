@@ -53,11 +53,11 @@
       <div id="magicWarning" v-html="messegeError"></div>
 
       <div v-bind:class="{ hidden: isHidden }" style="overflow: auto;" id="outputResult">
-        <pre class="tabSpace2" v-html="output" id="output" ref="output"></pre>
+        <pre  v-bind:class="classTabSpace" v-html="output" id="output" ref="output"></pre>
 
         <div class="actions-pre">
-          <button class="button is-link output is-small" id="btn-copyclipboard" v-on:click="resultCopy()">
-            Copy to clipboard
+          <button class="button is-link output is-small" :class="{'is-loading': copyLoading}" id="btn-copyclipboard" v-on:click="resultCopy()">
+            {{textBtnCopy}}
           </button>
           <button class="button output is-small" id="btn-clear-output" v-on:click="resultClear()">
             Clear
@@ -69,8 +69,8 @@
             </select>
           </div>
 
-          <div class="select is-small">
-            <select id="select-tab-space">
+          <div class="select is-small" >
+            <select id="select-tab-space" v-model="tabSpace" v-on:change="resultTabSpace()">
               <option value="2">2 Tab Space</option>
               <option value="3">3 Tab Space</option>
               <option value="4">4 Tab Space</option>
@@ -91,13 +91,16 @@ export default {
   name: 'app',
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App',
       inputDate: '',
       isHidden: true,
       messegeError: '',
       output: '',
       optionConvert: 1,
-      modelOutput: ''
+      modelOutput: '',
+      classTabSpace: 'tabSpace2',
+      tabSpace: '2',
+      copyLoading: false,
+      textBtnCopy: 'Copy to clipboard'
     }
   },
   methods:{
@@ -129,9 +132,20 @@ export default {
       this.inputDate = '';
       this.messegeError = '';
       this.$refs.text.focus();
+      this.textBtnCopy = 'Copy to clipboard';
     },
     resultCopy(){
+      var time = 1500;
       this.clip(this.$refs.output);
+
+      this.copyLoading = true;
+      setTimeout(() => {
+        this.textBtnCopy = 'Copied successfully';
+        this.copyLoading = false;
+        setTimeout(() => {
+          this.textBtnCopy = 'Copy to clipboard';
+        }, time);
+      }, time);
     },
     resultClear(){
       this.clearInput();
@@ -144,7 +158,7 @@ export default {
       }
     },
     resultTabSpace(){
-
+      this.classTabSpace = "tabSpace" + this.tabSpace;
     },
     resultMinifyCompress(){
         var minified = JSON.stringify(JSON.parse(this.output));
