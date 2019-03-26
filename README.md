@@ -1,6 +1,8 @@
-# MagicFormatter
+## MagicFormatter
 
-> A Vue.js project to the validation and formatting tool of JSON inspired in first MagicFormatter.
+
+
+A Vue.js project to the validation and formatting tool of JSON inspired in first MagicFormatter.
 
 ## Build Setup
 
